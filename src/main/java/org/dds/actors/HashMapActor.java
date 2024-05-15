@@ -22,7 +22,6 @@ public class HashMapActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(AddMessage.class, this::add)
-                .match(PutAllMessage.class, this::putALL)
                 .match(ReplaceMessage.class, this::replace)
                 .match(RemoveMessage.class, this::remove)
                 .match(ClearMessage.class, this::clear)
@@ -48,16 +47,6 @@ public class HashMapActor extends AbstractActor {
                 message.key(), message.value(), getSender(), self().path()
         );
     }
-
-    private void putALL(PutAllMessage message) {
-        message.newData().forEach(fakeDB::putIfAbsent);
-
-        LOG.info(
-                "Added values with keys {} and values {} successfully (Put ALl Operation), from {}, on actor {}",
-                message.newData().keySet(), message.newData().values(), getSender(),self().path()
-        );
-    }
-
     private void replace(ReplaceMessage message) {
         if (this.keyExists(message.key())) {
             fakeDB.replace(message.key(), message.newValue());
